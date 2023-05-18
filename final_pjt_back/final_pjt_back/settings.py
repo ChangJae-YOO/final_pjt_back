@@ -40,18 +40,18 @@ INSTALLED_APPS = [
     'rest_framework',
 
     # Cors policy
-    # 'corsheaders',
+    'corsheaders',
 
     #Auth
-    # 'rest_framework.authtoken',
-    # 'dj_rest_auth',
+    'rest_framework.authtoken',
+    'dj_rest_auth',
 
     # registration
-    # 'django.contrib.sites',
-    # 'allauth',
-    # 'allauth.account',
-    # 'allauth.socialaccount',
-    # 'dj_rest_auth.registration',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'dj_rest_auth.registration',
     
     'django.contrib.admin',
     'django.contrib.auth',
@@ -61,36 +61,36 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 ]
 
-# REST_AUTH = { # 회원가입시 토큰 발급
-#     'SESSION_LOGIN': False,
-# }
+REST_AUTH = { # 회원가입시 토큰 발급
+    'SESSION_LOGIN': False,
+}
 
-# SITE_ID = 1
+SITE_ID = 1
 # 하나의 컨텐츠로 여러 개의 도메인에 등록하고 싶을 때 사용
 
-# REST_FRAMEWORK = {
-#     # Authentication
-#     'DEFAULT_AUTHENTICATION_CLASSES': [
-#         'rest_framework.authentication.TokenAuthentication',
-#     ],
+REST_FRAMEWORK = {
+    # Authentication
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
 
-#     # permission
-#     'DEFAULT_PERMISSION_CLASSES': [
-#         # 'rest_framework.permissions.IsAuthenticated',
-#         'rest_framework.permissions.AllowAny',
-#     ],
+    # permission
+    'DEFAULT_PERMISSION_CLASSES': [
+        # 'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.AllowAny',
+    ],
 
-# #     # spectacular Settings
-# #     # 'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
-# # }
-
-# # SPECTACULAR_SETTINGS = {
-# #     'TITLE': 'Your Project API',
-# #     'DESCRIPTION': 'Your project description',
-# #     'VERSION': '1.0.0',
-# #     'SERVE_INCLUDE_SCHEMA': False,
-# #     # OTHER SETTINGS
+#     # spectacular Settings
+#     # 'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 # }
+
+# SPECTACULAR_SETTINGS = {
+#     'TITLE': 'Your Project API',
+#     'DESCRIPTION': 'Your project description',
+#     'VERSION': '1.0.0',
+#     'SERVE_INCLUDE_SCHEMA': False,
+#     # OTHER SETTINGS
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -100,14 +100,14 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # 'corsheaders.middleware.CorsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
-# CORS_ALLOWED_ORIGINS = [
-#     'http://localhost:8080',
-# ]
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:8080',
+]
 
-# CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = True
 
 ROOT_URLCONF = 'final_pjt_back.urls'
 
