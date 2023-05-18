@@ -7,6 +7,7 @@ from .serializers import GenreSerializer, MovieSerailizer, CommentSerializer
 from rest_framework import status
 import requests
 from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, get_list_or_404
 
 # id = movie_pk 에 해당하는 영화의 세부사항을 반환한다.
 @api_view(['GET'])
@@ -35,10 +36,30 @@ def search_movie(request, search_str):
 def comment_create(request, movie_pk):
     movie = Movie.objects.get(pk = movie_pk)
     serializer = CommentSerializer(data=request.data)
-    
+
     if serializer.is_valid(raise_exception=True):
         serializer.save(movie = movie, user = request.user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+@api_view(['GET', 'DELETE', 'PUT'])
+def comment_detail(request, comment_pk):
+    # comment = Comment.objects.get(pk=comment_pk)
+    comment = get_object_or_404(Comment, pk=comment_pk)
+
+    if request.method == 'GET':
+        serializer = CommentSerializer(comment)
+        return Response(serializer.data)
+
+    elif request.method == 'DELETE':
+        comment.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    elif request.method == 'PUT':
+        serializer = CommentSerializer(comment, data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data)
+
 
 
 # db에 영화 정보를 채운다.
