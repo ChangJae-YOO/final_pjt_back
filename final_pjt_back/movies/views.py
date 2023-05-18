@@ -4,8 +4,9 @@ from rest_framework.response import Response
 from .serializers import GenreSerializer, MovieSerailizer
 from rest_framework import status
 import requests
+from django.http import JsonResponse
 
-# Create your views here.
+# id = movie_pk 에 해당하는 영화의 세부사항을 반환한다.
 @api_view(['GET'])
 def movie_detail(request, movie_pk):
 
@@ -13,6 +14,20 @@ def movie_detail(request, movie_pk):
     serializer = MovieSerailizer(movie)
     return Response(serializer.data)
 
+# search_str 을 포함하는 제목을 가진 영화들을 반환한다.
+@api_view(['GET'])
+def search_movie(request, search_str):
+    movies_title = Movie.objects.filter(title__contains = search_str)
+    movies_original_title = Movie.objects.filter(original_title__contains = search_str)
+    movies = movies_title.union(movies_original_title)
+    movie_lst = []
+
+    for movie in movies:
+        movie_lst.append(MovieSerailizer(movie).data)
+
+    return JsonResponse(movie_lst, safe=False)
+
+# db에 영화 정보를 채운다.
 @api_view(['GET'])
 def make_movies(request):
 
@@ -41,8 +56,9 @@ def make_movies(request):
             genre = Genre.objects.get(id = genre_info['id'])
             movie.genres.add(genre)
 
-    return Response("hi")
+    return Response("good")
 
+# db에 장르 정보를 채운다.
 @api_view(['GET'])
 def make_genres(request):
 
