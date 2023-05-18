@@ -1,7 +1,9 @@
-from .models import Genre, Movie
+from .models import Genre, Movie, Comment
 from rest_framework.decorators import api_view
+from rest_framework.decorators import permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from .serializers import GenreSerializer, MovieSerailizer
+from .serializers import GenreSerializer, MovieSerailizer, CommentSerializer
 from rest_framework import status
 import requests
 from django.http import JsonResponse
@@ -26,6 +28,18 @@ def search_movie(request, search_str):
         movie_lst.append(MovieSerailizer(movie).data)
 
     return JsonResponse(movie_lst, safe=False)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def comment_create(request, movie_pk):
+    movie = Movie.objects.get(pk = movie_pk)
+    serializer = CommentSerializer(data=request.data)
+    
+    if serializer.is_valid(raise_exception=True):
+        serializer.save(movie = movie, user = request.user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
 
 # db에 영화 정보를 채운다.
 @api_view(['GET'])
