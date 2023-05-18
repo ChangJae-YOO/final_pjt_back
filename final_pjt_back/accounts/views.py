@@ -4,5 +4,3 @@ from django.contrib.auth import get_user_model
 from rest_framework.authtoken.models import Token
 
 # Create your views here.
-# def login(request):
-#     token = Token.objects.create(u)

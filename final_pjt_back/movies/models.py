@@ -18,10 +18,17 @@ class Movie(models.Model):
     release_date = models.DateTimeField(auto_now=False, auto_now_add=False)
     runtime = models.FloatField()
     vote_average = models.FloatField()
+    movie_likes = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='like_movies')
+    movie_hates = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='hate_movies')
+    movie_viewd = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='viewed_movies')
+
+
+
 
 class Comment(models.Model):
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    comment_likes = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='like_comments')
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
