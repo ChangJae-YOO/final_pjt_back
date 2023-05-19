@@ -12,7 +12,7 @@ class Theme(models.Model):
 class Query(models.Model):  # https://developer.themoviedb.org/reference/discover-movie 참고
     description = models.TextField()  # query 설명
 
-    include_adult = models.BooleanField(default=None, null=True)
+    include_adult = models.CharField(max_length=10, null=True)
     
     with_genres = models.TextField(null=True)
     without_genres = models.TextField(null=True)
