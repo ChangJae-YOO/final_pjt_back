@@ -1,11 +1,12 @@
 from django.db import models
 from django.conf import settings
 
-# Create your models here.
+# 장르 모델 (ERD 참고)
 class Genre(models.Model):
-    name = models.TextField()
+    name = models.TextField()  # 장르 이름
 
 
+# 영화 모델 (ERD 참고)
 class Movie(models.Model):
     title = models.CharField(max_length=100)
     adult = models.BooleanField()
@@ -23,8 +24,7 @@ class Movie(models.Model):
     movie_viewd = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='viewed_movies')
 
 
-
-
+# 댓글 모델 (ERD 참고)
 class Comment(models.Model):
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
