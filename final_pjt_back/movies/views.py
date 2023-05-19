@@ -37,26 +37,118 @@ def comment_create(request, movie_pk):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-# 영화에 달린 댓글을 삭제, 수정, 보는 부분 -> 만약 다른 유저가 작성한 댓글도 삭제 가능하다면 로직 수정 필요하다.
+# 영화에 달린 댓글을 삭제, 수정, 보는 부분
 @api_view(['GET', 'DELETE', 'PUT'])
 @permission_classes([IsAuthenticated])
 def comment_detail(request, comment_pk):
     comment = get_object_or_404(Comment, pk=comment_pk)
-    user = get_user_model()
+    user = request.user
 
     if request.method == 'GET':
         serializer = CommentSerializer(comment)
         return Response(serializer.data)
 
-    elif request.method == 'DELETE':
+    elif request.method == 'DELETE' and comment.user == user:
         comment.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    elif request.method == 'PUT':
+    elif request.method == 'PUT' and comment.user == user:
         serializer = CommentSerializer(comment, data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data)
+        
+    return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
+
+
+# 댓글 좋아요
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def like_comment(request, comment_pk):
+    comment = get_object_or_404(Comment, pk=comment_pk)
+    user = request.user
+
+    if comment.comment_likes.filter(pk=user.pk).exists():
+        comment.comment_likes.remove(user)
+        is_liked = False
+    else:
+        comment.comment_likes.add(user)
+        is_liked = True
+    
+    context = {
+        'is_liked':is_liked,
+        'like_count': comment.comment_likes.count(),
+    }
+
+    return JsonResponse(context)
+
+
+
+# 영화 좋아요
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def like_movie(request, movie_pk):
+    movie = get_object_or_404(Movie, pk=movie_pk)
+    user = request.user
+
+    if movie.movie_likes.filter(pk=user.pk).exists():
+        movie.movie_likes.remove(user)
+        is_liked = False
+    else:
+        movie.movie_likes.add(user)
+        is_liked = True
+    
+    context = {
+        'is_liked':is_liked,
+        'like_count': movie.movie_likes.count(),
+    }
+
+    return JsonResponse(context)
+
+
+# 영화 싫어요
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def hate_movie(request, movie_pk):
+    movie = get_object_or_404(Movie, pk=movie_pk)
+    user = request.user
+
+    if movie.movie_hates.filter(pk=user.pk).exists():
+        movie.movie_hates.remove(user)
+        is_hated = False
+    else:
+        movie.movie_hates.add(user)
+        is_hated = True
+    
+    context = {
+        'is_hated':is_hated,
+        'hate_count': movie.movie_hates.count(),
+    }
+
+    return JsonResponse(context)
+
+
+# 영화 봤어요
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def viewed_movie(request, movie_pk):
+    movie = get_object_or_404(Movie, pk=movie_pk)
+    user = request.user
+
+    if movie.movie_viewd.filter(pk=user.pk).exists():
+        movie.movie_viewd.remove(user)
+        is_viewed = False
+    else:
+        movie.movie_viewd.add(user)
+        is_viewed = True
+    
+    context = {
+        'is_viewed':is_viewed,
+        'viewed_count': movie.movie_viewd.count(),
+    }
+
+    return JsonResponse(context)
+
 
 
 # search_str 을 포함하는 제목을 가진 영화들을 반환한다.
