@@ -7,3 +7,10 @@ class ThemeSerializer(serializers.ModelSerializer):
         model = Theme
         fields = ('title', 'description', 'user')
         read_only_fields = ('user',)
+
+class QuerySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Query
+        fields = '__all__'
+        read_only_fields = ('user', 'theme')
