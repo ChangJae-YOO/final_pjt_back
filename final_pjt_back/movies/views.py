@@ -6,15 +6,13 @@ from .serializers import GenreSerializer, MovieSerailizer, CommentSerializer
 import requests
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view
-from django.shortcuts import get_object_or_404, get_list_or_404
+from django.shortcuts import get_object_or_404
 from rest_framework import status
 from django.http import JsonResponse
 from rest_framework.response import Response
 
 # django 사용자 인증
 from rest_framework.decorators import permission_classes
-from django.contrib.auth import get_user_model
-from django.contrib.auth.decorators import login_required
 
 
 # id = movie_pk 에 해당하는 영화의 세부사항을 반환한다.

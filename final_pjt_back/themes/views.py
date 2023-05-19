@@ -1,3 +1,81 @@
-from django.shortcuts import render
+# View 객체 생성
+from .models import Theme, Query
+from .serializers import ThemeSerializer
 
-# Create your views here.
+# View 요청 응답
+import requests
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view
+from django.shortcuts import get_object_or_404
+from rest_framework import status
+from django.http import JsonResponse
+from rest_framework.response import Response
+
+# django 사용자 인증
+from rest_framework.decorators import permission_classes
+
+
+# 테마 리스트를 가져오거나 테마를 생성한다.
+@api_view(['GET', 'POST'])
+def theme(request):
+    
+    if request.method == 'GET':
+        themes = Theme.objects.all()
+        serializer = ThemeSerializer(themes, many=True)
+        return Response(serializer.data)
+
+    if request.method == 'POST' and request.user.is_authenticated:
+        serializer = ThemeSerializer(data=request.data)
+
+        if serializer.is_valid(raise_exception=True):
+            serializer.save(user=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+# 테마 디테일, 수정, 삭제
+@api_view(['GET', 'DELETE', 'PUT'])
+@permission_classes([IsAuthenticated])
+def theme_detail(request, theme_pk):
+    theme = get_object_or_404(Theme, pk=theme_pk)
+    user = request.user
+
+    if request.method == 'GET':
+        serializer = ThemeSerializer(theme)
+        return Response(serializer.data)
+
+    elif request.method == 'DELETE' and theme.user == user:
+        theme.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    elif request.method == 'PUT' and theme.user == user:
+        serializer = ThemeSerializer(theme, data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data)
+        
+    return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
+
+
+# 영화 좋아요
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def like_theme(request, theme_pk):
+    theme = get_object_or_404(Theme, pk=theme_pk)
+    user = request.user
+
+    if theme.theme_likes.filter(pk=user.pk).exists():
+        theme.theme_likes.remove(user)
+        is_liked = False
+    else:
+        theme.theme_likes.add(user)
+        is_liked = True
+    
+    context = {
+        'is_liked':is_liked,
+        'like_count': theme.theme_likes.count(),
+    }
+
+    return JsonResponse(context)
+
