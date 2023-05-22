@@ -151,32 +151,9 @@ def query_detail(request, query_pk):
 
 @api_view(['POST'])
 def get_movies(request):
-    theme = Theme.objects.get(pk=theme_pk)
-    queries = theme.query_set.all()
-    ids = list(map(int, request.POST['id'].split()))
-    features = {
-        'with_genres': set(),
-        'without_genres': set(),
-
-        'language': set(),
-
-        'with_keywords': set(),
-        'without_keywords': set(),
-        
-        'vote_average_gte': set(),
-        'vote_average_lte': set(),
-        
-        'release_year': set(),
-        'release_date_gte': set(),
-        'release_date_lte': set(),
-        
-        'with_runtime_gte': set(),
-        'with_runtime_lte': set(),
-        
-        'sort_by': set(),
-
-        'with_crew': set(),
-    }
+    
+    features = request.POST
+    print(features)
 
     key_match = {
         'with_genres': 'with_genres',
@@ -202,17 +179,6 @@ def get_movies(request):
         'with_crew': 'with_crew',
     }
 
-    for query in queries:
-
-        if query.id not in ids:
-            continue
-
-        for key in features:
-            if eval(f'query.{key}') == None:
-                continue
-
-            features[key].add(eval(f'query.{key}'))
-
     url = 'https://api.themoviedb.org/3/discover/movie?page=1'
     Authorization = 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmNzFiMzQwOGVhNmFiMGU4YWM4YTM2Yjk4NTYwNWE0MyIsInN1YiI6IjYzZDIwM2M4YTQxMGM4MTFmOWUwMWM5ZiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.Io1ZK_1UZP3n6DOzMzbn-OqstYSopJ2V4g6Jp6_D5e0'
     accept = 'application/json'
@@ -221,14 +187,13 @@ def get_movies(request):
 
     for key in features:
 
-        if len(features[key]) == 0:
+        if key not in key_match:
             continue
 
         temp_query = '&' + str(key_match[key]) + '='
 
         for params in features[key]:
-            if params != 'None':
-                temp_query += str(params)
+            temp_query += str(params)
 
         url += temp_query
 
@@ -236,8 +201,6 @@ def get_movies(request):
         'Authorization': Authorization,
         'accept': accept,
     }
-
-    print(url)
 
     response = requests.get(url, headers=headers)
     return JsonResponse(response.json())

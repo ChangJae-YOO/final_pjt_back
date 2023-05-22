@@ -8,7 +8,8 @@ urlpatterns = [
 
     path('detail/<int:theme_pk>/create_question/', views.create_question),
     path('detail/<int:question_pk>/create_query/', views.create_query),
-    path('detail/<int:theme_pk>/get_movies/', views.get_movies),
     path('question/<int:question_pk>/', views.question_detail),
     path('query/<int:query_pk>/', views.query_detail),
+    
+    path('detail/get_movies/', views.get_movies),
 ]
