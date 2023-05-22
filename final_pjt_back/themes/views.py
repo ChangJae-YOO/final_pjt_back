@@ -152,8 +152,7 @@ def query_detail(request, query_pk):
 @api_view(['POST'])
 def get_movies(request):
     
-    features = request.POST
-    print(features)
+    features = request.data
 
     key_match = {
         'with_genres': 'with_genres',
@@ -183,8 +182,6 @@ def get_movies(request):
     Authorization = 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmNzFiMzQwOGVhNmFiMGU4YWM4YTM2Yjk4NTYwNWE0MyIsInN1YiI6IjYzZDIwM2M4YTQxMGM4MTFmOWUwMWM5ZiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.Io1ZK_1UZP3n6DOzMzbn-OqstYSopJ2V4g6Jp6_D5e0'
     accept = 'application/json'
 
-    print(features)
-
     for key in features:
 
         if key not in key_match:
@@ -201,6 +198,8 @@ def get_movies(request):
         'Authorization': Authorization,
         'accept': accept,
     }
+
+    print(url)
 
     response = requests.get(url, headers=headers)
     return JsonResponse(response.json())
