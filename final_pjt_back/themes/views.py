@@ -1,6 +1,6 @@
 # View 객체 생성
-from .models import Theme, Query
-from .serializers import ThemeSerializer, QuerySerializer
+from .models import Theme, AnswerQuery, Question
+from .serializers import ThemeSerializer, QuerySerializer, QuestionSerializer
 
 # View 요청 응답
 import requests
@@ -36,7 +36,6 @@ def theme(request):
 
 # 테마 디테일, 수정, 삭제
 @api_view(['GET', 'DELETE', 'PUT'])
-@permission_classes([IsAuthenticated])
 def theme_detail(request, theme_pk):
     theme = get_object_or_404(Theme, pk=theme_pk)
     user = request.user
@@ -80,34 +79,68 @@ def like_theme(request, theme_pk):
     return JsonResponse(context)
 
 
-# 테마에 쿼리를 생성한다.
+# 테마에 질문를 생성한다.
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def create_query(request, theme_pk):
+def create_question(request, theme_pk):
     theme = get_object_or_404(Theme, pk = theme_pk)
-    serializer = QuerySerializer(data=request.data)
+    serializer = QuestionSerializer(data=request.data)
 
     if serializer.is_valid(raise_exception=True):
-        serializer.save(theme = theme, user = request.user)
+        serializer.save(theme = theme)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-# 테마에 달린 쿼리를 삭제, 수정, 보는 부분
+# 테마에 달린 질문을 삭제, 수정, 보는 부분
+@api_view(['GET', 'DELETE', 'PUT'])
+@permission_classes([IsAuthenticated])
+def question_detail(request, question_pk):
+    query = get_object_or_404(Question, pk=question_pk)
+
+    if request.method == 'GET':
+        serializer = QuestionSerializer(query)
+        return Response(serializer.data)
+
+    elif request.method == 'DELETE':
+        query.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    elif request.method == 'PUT':
+        serializer = QuestionSerializer(query, data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data)
+        
+    return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
+
+
+# 질문에 쿼리를 생성한다.
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_query(request, question_pk):
+    question = get_object_or_404(Question, pk = question_pk)
+    serializer = QuerySerializer(data=request.data)
+
+    if serializer.is_valid(raise_exception=True):
+        serializer.save(question = question)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+# 질문에 달린 쿼리를 삭제, 수정, 보는 부분
 @api_view(['GET', 'DELETE', 'PUT'])
 @permission_classes([IsAuthenticated])
 def query_detail(request, query_pk):
-    query = get_object_or_404(Query, pk=query_pk)
-    user = request.user
+    query = get_object_or_404(AnswerQuery, pk=query_pk)
 
     if request.method == 'GET':
         serializer = QuerySerializer(query)
         return Response(serializer.data)
 
-    elif request.method == 'DELETE' and query.user == user:
+    elif request.method == 'DELETE':
         query.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    elif request.method == 'PUT' and query.user == user:
+    elif request.method == 'PUT':
         serializer = QuerySerializer(query, data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
@@ -117,7 +150,7 @@ def query_detail(request, query_pk):
 
 
 @api_view(['POST'])
-def get_movies(request, theme_pk):
+def get_movies(request):
     theme = Theme.objects.get(pk=theme_pk)
     queries = theme.query_set.all()
     ids = list(map(int, request.POST['id'].split()))
