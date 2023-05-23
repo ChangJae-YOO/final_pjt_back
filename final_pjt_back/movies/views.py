@@ -159,8 +159,16 @@ def search_movie(request, search_str):
     movies = movies_title.union(movies_original_title)
     movie_lst = []
 
-    for movie in movies:
-        movie_lst.append(MovieSerailizer(movie).data)
+    if movies.count() > 20:
+
+        for movie in movies[0:20]:
+            movie_lst.append(MovieSerailizer(movie).data)
+
+    else:
+
+        for movie in movies:
+            movie_lst.append(MovieSerailizer(movie).data)
+
 
     return JsonResponse(movie_lst, safe=False)
 
@@ -253,8 +261,16 @@ def get_movies(request):
 
     movie_lst = []
 
-    for movie in result_movies:
-        movie_lst.append(MovieSerailizer(movie).data)
+    if result_movies.count() > 20:
+
+        for movie in result_movies[0:20]:
+            movie_lst.append(MovieSerailizer(movie).data)
+
+    else:
+
+        for movie in result_movies:
+            movie_lst.append(MovieSerailizer(movie).data)
+
 
     return JsonResponse(movie_lst, safe=False)
 
@@ -281,6 +297,7 @@ def filter_movie(key, values, query_set):
         'with_runtime_lte',
     ]
     if key == 'include_adult':
+        values = list(map(int, values))
         return query_set.filter(adult__in = values)
 
     if key == 'with_genres':
@@ -289,9 +306,6 @@ def filter_movie(key, values, query_set):
     if key == 'without_genres':
         return query_set.exclude(genres__in = values)
     
-    if key == 'language':
-        return query_set.filter(original_language__in = values)
-    
     if key == 'with_keywords':
         return query_set.filter(Q(title__contains = values)|Q(original_title__contains = values))
     
@@ -299,27 +313,27 @@ def filter_movie(key, values, query_set):
         return query_set.exclude(Q(title__contains = values)|Q(original_title__contains = values))
     
     if key == 'vote_average_gte':
-        values = map(float, values)
+        values = list(map(float, values))
         return query_set.filter(vote_average__gte = max(values))
     
     if key == 'vote_average_lte':
-        values = map(float, values)
+        values = list(map(float, values))
         return query_set.filter(vote_average__lte = min(values))
     
     if key == 'release_date_gte':
-        values = map(datetime.date, values)
+        values = list(map(datetime.date, values))
         return query_set.filter(release_date__gte = max(values))
     
     if key == 'release_date_lte':
-        values = map(datetime.date, values)
+        values = list(map(datetime.date, values))
         return query_set.filter(release_date__lte = min(values))
     
     if key == 'with_runtime_gte':
-        values = map(float, values)
+        values =list(map(float, values))
         return query_set.filter(runtime__gte = max(values))
     
     if key == 'with_runtime_lte':
-        values = map(float, values)
+        values = list(map(float, values))
         return query_set.filter(runtime__lte = min(values))
     
     
