@@ -15,6 +15,6 @@ urlpatterns = [
      path('search/<str:search_str>/', views.search_movie),  # 영화 검색
      path('get_movies/', views.get_movies),
 
-     # path('make_movies/', views.make_movies),  # db에 영화 정보를 채워넣기 위한 url, 배포시엔 주석화 해야됨
-     # path('make_genres/', views.make_genres),  # db에 장르 정보를 채워넣기 위한 url, 배포시엔 주석화 해야됨
+     path('make_movies/', views.make_movies),  # db에 영화 정보를 채워넣기 위한 url, 배포시엔 주석화 해야됨
+     path('make_genres/', views.make_genres),  # db에 장르 정보를 채워넣기 위한 url, 배포시엔 주석화 해야됨
 ]

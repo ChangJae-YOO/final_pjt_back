@@ -17,6 +17,7 @@ class Movie(models.Model):
     popularity = models.FloatField()
     poster_path = models.TextField(null=True)
     backdrop_path = models.TextField(null=True)
+    tagline = models.TextField(null=True)
     release_date = models.DateTimeField(auto_now=False, auto_now_add=False)
     runtime = models.FloatField()
     vote_average = models.FloatField()

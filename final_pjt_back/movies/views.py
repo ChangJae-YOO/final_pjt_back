@@ -169,7 +169,9 @@ def search_movie(request, search_str):
 @api_view(['GET'])
 def make_movies(request):
 
-    for id in range(100, 1000):
+    for id in range(1, 100000):
+        print(id)
+
         response = requests.get(f"https://api.themoviedb.org/3/movie/{id}?language=ko-KR&api_key=f71b3408ea6ab0e8ac8a36b985605a43")
         json_movie = response.json()
 
@@ -188,6 +190,8 @@ def make_movies(request):
             release_date = json_movie['release_date'],
             runtime = json_movie['runtime'],
             vote_average = json_movie['vote_average'],
+            backdrop_path = json_movie['backdrop_path'],
+            tagline = json_movie['tagline'],
         )
 
         for genre_info in json_movie['genres']:
@@ -219,7 +223,7 @@ def get_movies(request):
     features = request.data
 
     key_lst = [
-        'include_adult'
+        'include_adult',
 
         'with_genres',
         'without_genres',
