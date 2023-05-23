@@ -81,7 +81,6 @@ def like_theme(request, theme_pk):
 
 # 테마에 질문를 생성한다.
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
 def create_question(request, theme_pk):
     theme = get_object_or_404(Theme, pk = theme_pk)
     serializer = QuestionSerializer(data=request.data)
@@ -116,7 +115,6 @@ def question_detail(request, question_pk):
 
 # 질문에 쿼리를 생성한다.
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
 def create_query(request, question_pk):
     question = get_object_or_404(Question, pk = question_pk)
     serializer = QuerySerializer(data=request.data)
@@ -148,61 +146,6 @@ def query_detail(request, query_pk):
         
     return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
 
-
-@api_view(['POST'])
-def get_movies(request):
-    
-    features = request.data
-
-    key_match = {
-        'with_genres': 'with_genres',
-        'without_genres': 'without_genres',
-
-        'language': 'language',
-
-        'with_keywords': 'with_keywords',
-        'without_keywords': 'without_keywords',
-        
-        'vote_average_gte': 'vote_average.gte',
-        'vote_average_lte': 'vote_average.lte',
-        
-        'release_year': 'release_year',
-        'release_date_gte': 'release_date.gte',
-        'release_date_lte': 'release_date.lte',
-        
-        'with_runtime_gte': 'with_runtime.gte',
-        'with_runtime_lte': 'with_runtime.lte',
-        
-        'sort_by': 'sort_by',
-
-        'with_crew': 'with_crew',
-    }
-
-    url = 'https://api.themoviedb.org/3/discover/movie?page=1'
-    Authorization = 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmNzFiMzQwOGVhNmFiMGU4YWM4YTM2Yjk4NTYwNWE0MyIsInN1YiI6IjYzZDIwM2M4YTQxMGM4MTFmOWUwMWM5ZiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.Io1ZK_1UZP3n6DOzMzbn-OqstYSopJ2V4g6Jp6_D5e0'
-    accept = 'application/json'
-
-    for key in features:
-
-        if key not in key_match:
-            continue
-
-        temp_query = '&' + str(key_match[key]) + '='
-
-        for params in features[key]:
-            temp_query += str(params)
-
-        url += temp_query
-
-    headers = {
-        'Authorization': Authorization,
-        'accept': accept,
-    }
-
-    print(url)
-
-    response = requests.get(url, headers=headers)
-    return JsonResponse(response.json())
 
 
 

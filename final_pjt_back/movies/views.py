@@ -10,6 +10,8 @@ from django.shortcuts import get_object_or_404
 from rest_framework import status
 from django.http import JsonResponse
 from rest_framework.response import Response
+from django.db.models import Q
+import datetime
 
 # django 사용자 인증
 from rest_framework.decorators import permission_classes
@@ -208,3 +210,112 @@ def make_genres(request):
         )
 
     return Response("good")
+
+
+@api_view(['POST'])
+def get_movies(request):
+    
+    result_movies = Movie.objects.all()
+    features = request.data
+
+    key_lst = [
+        'include_adult'
+
+        'with_genres',
+        'without_genres',
+
+        'language',
+
+        'with_keywords',
+        'without_keywords',
+        
+        'vote_average_gte',
+        'vote_average_lte',
+        
+        'release_date_gte',
+        'release_date_lte',
+        
+        'with_runtime_gte',
+        'with_runtime_lte',
+    ]
+
+    for key in features:
+
+        if key not in key_lst:
+            continue
+
+        print(key, features[key])
+        result_movies = filter_movie(key, features[key], result_movies)
+
+    movie_lst = []
+
+    for movie in result_movies:
+        movie_lst.append(MovieSerailizer(movie).data)
+
+    return JsonResponse(movie_lst, safe=False)
+
+
+def filter_movie(key, values, query_set):
+    key_lst = [
+        'include_adult'
+
+        'with_genres',
+        'without_genres',
+
+        'language',
+
+        'with_keywords',
+        'without_keywords',
+        
+        'vote_average_gte',
+        'vote_average_lte',
+        
+        'release_date_gte',
+        'release_date_lte',
+        
+        'with_runtime_gte',
+        'with_runtime_lte',
+    ]
+    if key == 'include_adult':
+        return query_set.filter(adult__in = values)
+
+    if key == 'with_genres':
+        return query_set.filter(genres__in = values)
+    
+    if key == 'without_genres':
+        return query_set.exclude(genres__in = values)
+    
+    if key == 'language':
+        return query_set.filter(original_language__in = values)
+    
+    if key == 'with_keywords':
+        return query_set.filter(Q(title__contains = values)|Q(original_title__contains = values))
+    
+    if key == 'without_keywords':
+        return query_set.exclude(Q(title__contains = values)|Q(original_title__contains = values))
+    
+    if key == 'vote_average_gte':
+        values = map(float, values)
+        return query_set.filter(vote_average__gte = max(values))
+    
+    if key == 'vote_average_lte':
+        values = map(float, values)
+        return query_set.filter(vote_average__lte = min(values))
+    
+    if key == 'release_date_gte':
+        values = map(datetime.date, values)
+        return query_set.filter(release_date__gte = max(values))
+    
+    if key == 'release_date_lte':
+        values = map(datetime.date, values)
+        return query_set.filter(release_date__lte = min(values))
+    
+    if key == 'with_runtime_gte':
+        values = map(float, values)
+        return query_set.filter(runtime__gte = max(values))
+    
+    if key == 'with_runtime_lte':
+        values = map(float, values)
+        return query_set.filter(runtime__lte = min(values))
+    
+    

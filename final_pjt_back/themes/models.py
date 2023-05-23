@@ -12,11 +12,13 @@ class Theme(models.Model):
 
 class Question(models.Model):
     question = models.TextField()
+    image = models.ImageField(null=True)
     theme = models.ForeignKey(Theme, on_delete=models.CASCADE)
     
 
 class AnswerQuery(models.Model):  # https://developer.themoviedb.org/reference/discover-movie 참고
     description = models.TextField()  # query 설명
+    image = models.ImageField(null=True)
 
     include_adult = models.CharField(max_length=10, null=True)
     

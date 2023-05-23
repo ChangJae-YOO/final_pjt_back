@@ -16,13 +16,13 @@ class Movie(models.Model):
     overview = models.TextField()
     popularity = models.FloatField()
     poster_path = models.TextField(null=True)
+    backdrop_path = models.TextField(null=True)
     release_date = models.DateTimeField(auto_now=False, auto_now_add=False)
     runtime = models.FloatField()
     vote_average = models.FloatField()
     movie_likes = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='like_movies')
     movie_hates = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='hate_movies')
     movie_viewd = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='viewed_movies')
-
 
 # 댓글 모델 (ERD 참고)
 class Comment(models.Model):
