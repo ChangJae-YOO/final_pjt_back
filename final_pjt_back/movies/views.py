@@ -188,9 +188,9 @@ def search_movie(request, search_str):
 
 # db에 영화 정보를 채운다.
 @api_view(['GET'])
-def make_movies(request):
+def make_movies(request, start_idx, end_idx):
 
-    for id in range(6148, 100000):
+    for id in range(start_idx, end_idx):
         print(id)
 
         response = requests.get(f"https://api.themoviedb.org/3/movie/{id}?language=ko-KR&api_key=f71b3408ea6ab0e8ac8a36b985605a43")
@@ -309,8 +309,11 @@ def filter_movie(key, values, query_set):
         'with_runtime_gte',
         'with_runtime_lte',
     ]
-    if key == 'include_adult':
-        values = list(map(int, values))
+    # if key == 'include_adult':
+    #     values = list(map(int, values))
+    #     return query_set.filter(adult__in = values)
+    
+    if key == 'language':
         return query_set.filter(adult__in = values)
 
     if key == 'with_genres':
