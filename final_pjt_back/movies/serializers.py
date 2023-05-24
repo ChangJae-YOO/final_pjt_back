@@ -34,3 +34,11 @@ class MovieSerailizer(serializers.ModelSerializer):
     class Meta:
         model = Movie
         fields = '__all__'
+    
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        rep['movie_like_users'] = []
+        User = get_user_model()
+        for user_id in rep['movie_likes']:
+            rep['movie_like_users'].append(User.objects.get(pk=user_id).username)
+        return rep
