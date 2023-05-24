@@ -13,6 +13,7 @@ from rest_framework.response import Response
 
 # django 사용자 인증
 from rest_framework.decorators import permission_classes
+from django.contrib.auth import get_user_model
 
 
 # 테마 리스트를 가져오거나 테마를 생성한다.
@@ -32,6 +33,32 @@ def theme(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['get'])
+@permission_classes([IsAuthenticated])
+def liked_theme(request):
+    user = get_user_model().objects.get(pk=request.user.id)
+    themes = user.like_themes.all()
+    theme_lst = []
+
+    for theme in themes:
+        theme_lst.append(ThemeSerializer(theme).data)
+
+    return JsonResponse(theme_lst, safe=False)
+
+
+@api_view(['get'])
+@permission_classes([IsAuthenticated])
+def made_theme(request):
+    user = get_user_model().objects.get(pk=request.user.id)
+    themes = user.theme_set.all()
+    theme_lst = []
+
+    for theme in themes:
+        theme_lst.append(ThemeSerializer(theme).data)
+
+    return JsonResponse(theme_lst, safe=False)
 
 
 # 테마 디테일, 수정, 삭제

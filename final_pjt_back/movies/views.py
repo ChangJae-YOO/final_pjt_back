@@ -15,6 +15,7 @@ import datetime
 
 # django 사용자 인증
 from rest_framework.decorators import permission_classes
+from django.contrib.auth import get_user_model
 
 
 # id = movie_pk 에 해당하는 영화의 세부사항을 반환한다.
@@ -105,6 +106,18 @@ def like_movie(request, movie_pk):
 
     return JsonResponse(context)
 
+
+@api_view(['get'])
+@permission_classes([IsAuthenticated])
+def liked_movie(request):
+    user = get_user_model().objects.get(pk=request.user.id)
+    movies = user.like_movies.all()
+    movie_lst = []
+
+    for movie in movies:
+        movie_lst.append(MovieSerailizer(movie).data)
+
+    return JsonResponse(movie_lst, safe=False)
 
 # 영화 싫어요
 @api_view(['POST'])

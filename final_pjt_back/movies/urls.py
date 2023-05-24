@@ -9,6 +9,7 @@ urlpatterns = [
      path('comments/<int:comment_pk>/like_comment/', views.like_comment),  # 영화의 달린 댓글의 수정, 삭제, 보기
      
      path('detail/<int:movie_pk>/like_movie/', views.like_movie),  # 영화 좋아요
+     path('liked_movie/', views.liked_movie),  # 좋아요 한 영화
      path('detail/<int:movie_pk>/hate_movie/', views.hate_movie),  # 영화 싫어요
      path('detail/<int:movie_pk>/viewed_movie/', views.viewed_movie),  # 영화 봤어요
      
