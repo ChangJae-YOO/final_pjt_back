@@ -127,7 +127,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'mysite.wsgi.application'
+WSGI_APPLICATION = 'final_pjt_back.wsgi.application'
 
 
 # Database
