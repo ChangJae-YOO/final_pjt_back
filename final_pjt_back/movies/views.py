@@ -243,6 +243,8 @@ def get_movies(request):
     result_movies = Movie.objects.all()
     features = request.data
 
+    print(features)
+
     key_lst = [
         'include_adult',
 
@@ -270,7 +272,8 @@ def get_movies(request):
             continue
 
         print(key, features[key])
-        result_movies = filter_movie(key, features[key], result_movies)
+        if len(features[key]) > 0:
+            result_movies = filter_movie(key, features[key][0].split(','), result_movies)
 
     movie_lst = []
 
@@ -314,19 +317,34 @@ def filter_movie(key, values, query_set):
     #     return query_set.filter(adult__in = values)
     
     if key == 'language':
-        return query_set.filter(adult__in = values)
+        return query_set.filter(original_language__in = values)
 
     if key == 'with_genres':
+        values = list(map(int, values))
         return query_set.filter(genres__in = values)
     
     if key == 'without_genres':
+        values = list(map(int, values))
         return query_set.exclude(genres__in = values)
     
     if key == 'with_keywords':
-        return query_set.filter(Q(title__contains = values)|Q(original_title__contains = values))
+        param = Q()
+
+        for value in values:
+            print(value)
+            param.add(Q(title__contains = value)|Q(original_title__contains = value), param.OR)
+
+        print(param)
+
+        return query_set.filter(param)
     
     if key == 'without_keywords':
-        return query_set.exclude(Q(title__contains = values)|Q(original_title__contains = values))
+        param = Q()
+
+        for value in values:
+            param.add(Q(title__contains = value)|Q(original_title__contains = value), param.OR)
+
+        return query_set.exclude(param)
     
     if key == 'vote_average_gte':
         values = list(map(float, values))
@@ -337,11 +355,9 @@ def filter_movie(key, values, query_set):
         return query_set.filter(vote_average__lte = min(values))
     
     if key == 'release_date_gte':
-        values = list(map(datetime.date, values))
         return query_set.filter(release_date__gte = max(values))
     
     if key == 'release_date_lte':
-        values = list(map(datetime.date, values))
         return query_set.filter(release_date__lte = min(values))
     
     if key == 'with_runtime_gte':
