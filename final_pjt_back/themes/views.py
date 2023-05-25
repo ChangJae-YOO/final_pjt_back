@@ -21,7 +21,7 @@ from django.contrib.auth import get_user_model
 def theme(request):
     
     if request.method == 'GET':
-        themes = Theme.objects.all()
+        themes = Theme.objects.all().order_by('-theme_likes')
         serializer = ThemeSerializer(themes, many=True)
         return Response(serializer.data)
 
